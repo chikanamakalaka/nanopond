@@ -12,7 +12,7 @@ AC_CONFIG_FILES([Makefile])
 AC_PROG_CC
 
 # Checks for libraries.
-AC_CHECK_LIB([SDL], [SDL_Event], [], [echo "SDL library is required for this program" exit -1])
+AC_CHECK_LIB([SDL], [main], [], [echo "SDL library is required for this program" exit -1])
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdint.h stdlib.h string.h SDL.h])
