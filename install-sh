@@ -1,0 +1,288 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title>DOM/install-sh - view - 1.1.1.1</title>
+<meta name="robots" content="nofollow" />
+<meta name="generator" content="FreeBSD-CVSweb 3.0.6" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<link rel="stylesheet" type="text/css" href="/css/cvsweb.css" />
+</head>
+<body class="src">
+<table class="navigate-header" width="100%" summary="Navigation">
+ <tr>
+  <td>
+<a href="./install-sh#rev1.1.1.1"><img src="/icons/back.gif" alt="[BACK]" border="0" width="20" height="22" /></a><b>Return to <a href="./install-sh#rev1.1.1.1">install-sh</a> CVS log</b> <img src="/icons/text.gif" alt="[TXT]" border="0" width="20" height="22" /></td>  <td style="text-align: right"><img src="/icons/dir.gif" alt="[DIR]" border="0" width="20" height="22" /> <b>Up to  <a href="/cvsweb/#dirlist">[Public]</a> / <a href="/cvsweb/DOM/#dirlist">DOM</a></b></td>
+ </tr>
+</table>
+<hr />
+<div class="log-markup">
+File:&nbsp;
+ <a href="/cvsweb/#dirlist">[Public]</a> / <a href="/cvsweb/DOM/#dirlist">DOM</a> / <a href="/cvsweb/DOM/install-sh">install-sh</a><br />
+<a name="rev1.1.1.1"></a><a name="START"></a><a name="HEAD"></a><a name="W3C_DOM"></a><a name="MAIN"></a>
+ Revision <b>1.1.1.1</b> <i>(vendor branch)</i>: <a href="/cvsweb/~checkout~/DOM/install-sh?rev=1.1.1.1;content-type=text%2Fplain" class="download-link">download</a> - view: <a href="install-sh?rev=1.1.1.1;content-type=text%2Fplain" class="display-link">text</a>, <a href="install-sh?annotate=1.1.1.1">annotated</a> - <a href="install-sh?r1=1.1.1.1#rev1.1.1.1">select&nbsp;for&nbsp;diffs</a><br />
+<i>Wed Jun 10 21:14:39 1998 UTC</i> (16 years, 11 months ago) by <i>daniel</i><br />
+Branches: <a href="./install-sh?only_with_tag=W3C_DOM">W3C_DOM</a>,
+<a href="./install-sh?only_with_tag=MAIN">MAIN</a><br />
+CVS tags: <a href="./install-sh?only_with_tag=START">START</a>,
+<a href="./install-sh?only_with_tag=HEAD">HEAD</a><br />
+<pre class="log">
+Document Object Model code
+</pre>
+</div>
+<hr /><pre>
+#! /bin/sh
+#
+# install - install a program, script, or datafile
+# This comes from X11R5 (mit/util/scripts/install.sh).
+#
+# Copyright 1991 by the Massachusetts Institute of Technology
+#
+# Permission to use, copy, modify, distribute, and sell this software and its
+# documentation for any purpose is hereby granted without fee, provided that
+# the above copyright notice appear in all copies and that both that
+# copyright notice and this permission notice appear in supporting
+# documentation, and that the name of M.I.T. not be used in advertising or
+# publicity pertaining to distribution of the software without specific,
+# written prior permission.  M.I.T. makes no representations about the
+# suitability of this software for any purpose.  It is provided &quot;as is&quot;
+# without express or implied warranty.
+#
+# Calling this script install-sh is preferred over install.sh, to prevent
+# `make' implicit rules from creating a file called install from it
+# when there is no Makefile.
+#
+# This script is compatible with the BSD install script, but was written
+# from scratch.  It can only install one file at a time, a restriction
+# shared with many OS's install programs.
+
+
+# set DOITPROG to echo to test this script
+
+# Don't use :- since 4.3BSD and earlier shells don't like it.
+doit=&quot;${DOITPROG-}&quot;
+
+
+# put in absolute paths if you don't have them in your path; or use env. vars.
+
+mvprog=&quot;${MVPROG-mv}&quot;
+cpprog=&quot;${CPPROG-cp}&quot;
+chmodprog=&quot;${CHMODPROG-chmod}&quot;
+chownprog=&quot;${CHOWNPROG-chown}&quot;
+chgrpprog=&quot;${CHGRPPROG-chgrp}&quot;
+stripprog=&quot;${STRIPPROG-strip}&quot;
+rmprog=&quot;${RMPROG-rm}&quot;
+mkdirprog=&quot;${MKDIRPROG-mkdir}&quot;
+
+transformbasename=&quot;&quot;
+transform_arg=&quot;&quot;
+instcmd=&quot;$mvprog&quot;
+chmodcmd=&quot;$chmodprog 0755&quot;
+chowncmd=&quot;&quot;
+chgrpcmd=&quot;&quot;
+stripcmd=&quot;&quot;
+rmcmd=&quot;$rmprog -f&quot;
+mvcmd=&quot;$mvprog&quot;
+src=&quot;&quot;
+dst=&quot;&quot;
+dir_arg=&quot;&quot;
+
+while [ x&quot;$1&quot; != x ]; do
+    case $1 in
+	-c) instcmd=&quot;$cpprog&quot;
+	    shift
+	    continue;;
+
+	-d) dir_arg=true
+	    shift
+	    continue;;
+
+	-m) chmodcmd=&quot;$chmodprog $2&quot;
+	    shift
+	    shift
+	    continue;;
+
+	-o) chowncmd=&quot;$chownprog $2&quot;
+	    shift
+	    shift
+	    continue;;
+
+	-g) chgrpcmd=&quot;$chgrpprog $2&quot;
+	    shift
+	    shift
+	    continue;;
+
+	-s) stripcmd=&quot;$stripprog&quot;
+	    shift
+	    continue;;
+
+	-t=*) transformarg=`echo $1 | sed 's/-t=//'`
+	    shift
+	    continue;;
+
+	-b=*) transformbasename=`echo $1 | sed 's/-b=//'`
+	    shift
+	    continue;;
+
+	*)  if [ x&quot;$src&quot; = x ]
+	    then
+		src=$1
+	    else
+		# this colon is to work around a 386BSD /bin/sh bug
+		:
+		dst=$1
+	    fi
+	    shift
+	    continue;;
+    esac
+done
+
+if [ x&quot;$src&quot; = x ]
+then
+	echo &quot;install:	no input file specified&quot;
+	exit 1
+else
+	true
+fi
+
+if [ x&quot;$dir_arg&quot; != x ]; then
+	dst=$src
+	src=&quot;&quot;
+	
+	if [ -d $dst ]; then
+		instcmd=:
+	else
+		instcmd=mkdir
+	fi
+else
+
+# Waiting for this to be detected by the &quot;$instcmd $src $dsttmp&quot; command
+# might cause directories to be created, which would be especially bad 
+# if $src (and thus $dsttmp) contains '*'.
+
+	if [ -f $src -o -d $src ]
+	then
+		true
+	else
+		echo &quot;install:  $src does not exist&quot;
+		exit 1
+	fi
+	
+	if [ x&quot;$dst&quot; = x ]
+	then
+		echo &quot;install:	no destination specified&quot;
+		exit 1
+	else
+		true
+	fi
+
+# If destination is a directory, append the input filename; if your system
+# does not like double slashes in filenames, you may need to add some logic
+
+	if [ -d $dst ]
+	then
+		dst=&quot;$dst&quot;/`basename $src`
+	else
+		true
+	fi
+fi
+
+## this sed command emulates the dirname command
+dstdir=`echo $dst | sed -e 's,[^/]*$,,;s,/$,,;s,^$,.,'`
+
+# Make sure that the destination directory exists.
+#  this part is taken from Noah Friedman's mkinstalldirs script
+
+# Skip lots of stat calls in the usual case.
+if [ ! -d &quot;$dstdir&quot; ]; then
+defaultIFS='	
+'
+IFS=&quot;${IFS-${defaultIFS}}&quot;
+
+oIFS=&quot;${IFS}&quot;
+# Some sh's can't handle IFS=/ for some reason.
+IFS='%'
+set - `echo ${dstdir} | sed -e 's@/@%@g' -e 's@^%@/@'`
+IFS=&quot;${oIFS}&quot;
+
+pathcomp=''
+
+while [ $# -ne 0 ] ; do
+	pathcomp=&quot;${pathcomp}${1}&quot;
+	shift
+
+	if [ ! -d &quot;${pathcomp}&quot; ] ;
+        then
+		$mkdirprog &quot;${pathcomp}&quot;
+	else
+		true
+	fi
+
+	pathcomp=&quot;${pathcomp}/&quot;
+done
+fi
+
+if [ x&quot;$dir_arg&quot; != x ]
+then
+	$doit $instcmd $dst &amp;&amp;
+
+	if [ x&quot;$chowncmd&quot; != x ]; then $doit $chowncmd $dst; else true ; fi &amp;&amp;
+	if [ x&quot;$chgrpcmd&quot; != x ]; then $doit $chgrpcmd $dst; else true ; fi &amp;&amp;
+	if [ x&quot;$stripcmd&quot; != x ]; then $doit $stripcmd $dst; else true ; fi &amp;&amp;
+	if [ x&quot;$chmodcmd&quot; != x ]; then $doit $chmodcmd $dst; else true ; fi
+else
+
+# If we're going to rename the final executable, determine the name now.
+
+	if [ x&quot;$transformarg&quot; = x ] 
+	then
+		dstfile=`basename $dst`
+	else
+		dstfile=`basename $dst $transformbasename | 
+			sed $transformarg`$transformbasename
+	fi
+
+# don't allow the sed command to completely eliminate the filename
+
+	if [ x&quot;$dstfile&quot; = x ] 
+	then
+		dstfile=`basename $dst`
+	else
+		true
+	fi
+
+# Make a temp file name in the proper directory.
+
+	dsttmp=$dstdir/#inst.$$#
+
+# Move or copy the file name to the temp name
+
+	$doit $instcmd $src $dsttmp &amp;&amp;
+
+	trap &quot;rm -f ${dsttmp}&quot; 0 &amp;&amp;
+
+# and set any options; do chmod last to preserve setuid bits
+
+# If any of these fail, we abort the whole thing.  If we want to
+# ignore errors from any of these, just make sure not to ignore
+# errors from the above &quot;$doit $instcmd $src $dsttmp&quot; command.
+
+	if [ x&quot;$chowncmd&quot; != x ]; then $doit $chowncmd $dsttmp; else true;fi &amp;&amp;
+	if [ x&quot;$chgrpcmd&quot; != x ]; then $doit $chgrpcmd $dsttmp; else true;fi &amp;&amp;
+	if [ x&quot;$stripcmd&quot; != x ]; then $doit $stripcmd $dsttmp; else true;fi &amp;&amp;
+	if [ x&quot;$chmodcmd&quot; != x ]; then $doit $chmodcmd $dsttmp; else true;fi &amp;&amp;
+
+# Now rename the file to the real destination.
+
+	$doit $rmcmd -f $dstdir/$dstfile &amp;&amp;
+	$doit $mvcmd $dsttmp $dstdir/$dstfile 
+
+fi &amp;&amp;
+
+
+exit 0
+</pre>
+<hr />
+<address><a href="http://www.w3.org/Help/Webmaster">Webmaster</a></address>
+</body>
+</html>
